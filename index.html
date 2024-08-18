@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .output {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>VM Manager</h1>
+
+    <h2>QEMU Command</h2>
+    <textarea id="qemu-command" placeholder="Enter QEMU command..."></textarea>
+    <button onclick="runQEMUCommand()">Run QEMU Command</button>
+    <div id="qemu-output" class="output"></div>
+
+    <h2>VirtualBox Command</h2>
+    <textarea id="vbox-command" placeholder="Enter VirtualBox command..."></textarea>
+    <button onclick="runVBoxCommand()">Run VirtualBox Command</button>
+    <div id="vbox-output" class="output"></div>
+
+    <!-- JavaScript Libraries -->
+    <script>
+        async function runCommand(commandType, command) {
+            try {
+                const response = await fetch('/run-command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ commandType, command })
+                });
+                const result = await response.json();
+                return result.output;
+            } catch (error) {
+                return `Error: ${error.message}`;
+            }
+        }
+
+        async function runQEMUCommand() {
+            const command = document.getElementById('qemu-command').value;
+            const output = await runCommand('qemu', command);
+            document.getElementById('qemu-output').textContent = output;
+        }
+
+        async function runVBoxCommand() {
+            const command = document.getElementById('vbox-command').value;
+            const output = await runCommand('vbox', command);
+            document.getElementById('vbox-output').textContent = output;
+        }
+    </script>
+</body>
+</html>
